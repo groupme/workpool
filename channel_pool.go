@@ -4,22 +4,23 @@ import "sync"
 
 func NewChannelPool(size int) *ChannelPool {
 	return &ChannelPool{
-		size:      size,
+		Size:      size,
 		queue:     make(chan Job, 100),
 		waitGroup: &sync.WaitGroup{},
 	}
 }
 
 type ChannelPool struct {
-	size      int
-	queue     chan Job
-	waitGroup *sync.WaitGroup
+	Size      int
 	OnEnqueue func(Job)
 	OnDequeue func(Job)
+
+	queue     chan Job
+	waitGroup *sync.WaitGroup
 }
 
 func (p ChannelPool) Start() {
-	for i := 0; i < p.size; i++ {
+	for i := 0; i < p.Size; i++ {
 		w := &ChannelWorker{id: i, pool: p}
 		go w.Work()
 	}
